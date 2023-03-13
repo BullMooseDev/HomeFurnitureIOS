@@ -1,7 +1,7 @@
 
 import UIKit
 
-class FurnitureDetailViewController: UIViewController {
+class FurnitureDetailViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
     var furniture: Furniture?
     
@@ -40,6 +40,41 @@ class FurnitureDetailViewController: UIViewController {
     
     @IBAction func choosePhotoButtonTapped(_ sender: Any) {
         
+        let imagePicker = UIImagePickerController()
+        
+        imagePicker.delegate = self
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let cancelAction = UIAlertAction(title: "cancel", style: .cancel)
+        
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            let photoLibraryAction = UIAlertAction(title: "photo library", style: .default, handler: {
+                (_) in imagePicker.sourceType = .photoLibrary
+            })
+            alertController.addAction(photoLibraryAction)
+        }
+        
+        let useImageAction = UIAlertAction(title: "image", style: .default, handler: {
+            action in imagePicker.sourceType = .photoLibrary
+        })
+        
+        let useCameraAction = UIAlertAction(title: "camera", style: .default, handler: {
+            action in imagePicker.sourceType = .camera
+        })
+        
+        present(alertController, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
+        guard let image = info[.originalImage] as? UIImage else { return }
+        furniture?.imageData = image.pngData()
+        dismiss(animated: true, completion: nil)
+        updateView()
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
     }
 
     @IBAction func actionButtonTapped(_ sender: Any) {
